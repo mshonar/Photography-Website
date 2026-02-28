@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohammed Shonar | Visuals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Floating nav: transparent over hero, frosted glass once scrolled past -->
+  <nav class="site-nav" id="site-nav">
+    <span class="nav-name">Mohammed Shonar</span>
+    <a class="nav-link" id="nav-unsplash" href="https://unsplash.com/@shonar" target="_blank" rel="noopener">Unsplash ↗</a>
+  </nav>
+
+  <!-- Hero: full viewport, photo background, name + stats overlay -->
+  <section class="hero" id="hero">
+    <div class="hero-skeleton skeleton" id="hero-skeleton"></div>
+    <img class="hero-bg" id="hero-bg" alt="">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-name">Mohammed<br>Shonar</h1>
+      <p class="hero-tagline" id="hero-tagline"></p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-downloads">–</span>
+          <span class="hero-stat-label">Downloads</span>
+        </div>
+        <span class="hero-stat-divider"></span>
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-views">–</span>
+          <span class="hero-stat-label">Views</span>
+        </div>
+        <span class="hero-stat-divider"></span>
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-photos">–</span>
+          <span class="hero-stat-label">Photos</span>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator" aria-hidden="true">
+      <span class="scroll-label">Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Gallery grid -->
+  <main>
+    <div class="gallery" id="gallery"></div>
+  </main>
+
+  <!-- Lightbox (always in DOM, toggled via .is-open) -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+    <div class="lightbox-backdrop"></div>
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&#x2715;</button>
+    <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" aria-label="Previous photo">&#8592;</button>
+    <button class="lightbox-arrow lightbox-next" id="lightbox-next" aria-label="Next photo">&#8594;</button>
+    <div class="lightbox-content">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="">
+      <div class="lightbox-meta">
+        <span class="lightbox-location" id="lightbox-location"></span>
+        <div class="lightbox-meta-right">
+          <span class="lightbox-counter" id="lightbox-counter"></span>
+          <a class="lightbox-link" id="lightbox-link" href="" target="_blank" rel="noopener">View on Unsplash &#8599;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Mohammed Shonar</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

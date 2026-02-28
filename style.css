@@ -1,0 +1,507 @@
+/* ============================================================
+   1. CSS Custom Properties
+   ============================================================ */
+:root {
+  --bg:               #fafafa;
+  --surface:          #ffffff;
+  --border:           #e2e8f0;
+  --text:             #0f172a;
+  --text-muted:       #64748b;
+  --skeleton:         #e2e8f0;
+  --skeleton-shine:   #f1f5f9;
+  --glass-bg:         rgba(250, 250, 250, 0.88);
+  --glass-border:     rgba(0, 0, 0, 0.07);
+  --lightbox-bg:      rgba(8, 10, 18, 0.95);
+  --font:             'Plus Jakarta Sans', system-ui, sans-serif;
+  --gap:              8px;
+  --r-sm:             8px;
+  --r-md:             12px;
+  --r-full:           9999px;
+  --t-fast:           150ms ease;
+  --t-base:           300ms ease;
+  --t-slow:           700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============================================================
+   2. Reset & Base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+img { display: block; max-width: 100%; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   3. Skeleton shimmer
+   ============================================================ */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton)       25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton)       75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Gallery placeholder cards */
+.gallery-skeleton {
+  break-inside: avoid;
+  margin-bottom: var(--gap);
+  border-radius: var(--r-md);
+  aspect-ratio: 3 / 4;
+}
+
+.gallery-skeleton:nth-child(3n + 1) { aspect-ratio: 4 / 5; }
+.gallery-skeleton:nth-child(3n + 2) { aspect-ratio: 2 / 3; }
+.gallery-skeleton:nth-child(3n)     { aspect-ratio: 16 / 9; }
+
+/* ============================================================
+   4. Floating Navigation
+   ============================================================ */
+.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem 2.5rem;
+  border-bottom: 1px solid transparent;
+  transition:
+    background 0.5s ease,
+    padding 0.35s ease,
+    border-color 0.5s ease;
+}
+
+.site-nav.past-hero {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  padding: 1.1rem 2.5rem;
+  border-color: var(--glass-border);
+}
+
+.nav-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  transition: color 0.5s ease;
+}
+
+.site-nav.past-hero .nav-name { color: var(--text); }
+
+.nav-link {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.06em;
+  transition: color 0.5s ease, opacity 0.2s ease;
+}
+
+.nav-link:hover { opacity: 0.85; }
+.site-nav.past-hero .nav-link { color: var(--text-muted); }
+
+/* ============================================================
+   5. Hero Section
+   ============================================================ */
+.hero {
+  position: relative;
+  height: 100dvh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: #080b14;
+}
+
+.hero-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+}
+
+.hero-bg.is-loaded { opacity: 1; }
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.90) 0%,
+    rgba(0, 0, 0, 0.30) 50%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 0 2.5rem 3.5rem;
+  color: #ffffff;
+}
+
+.hero-name {
+  font-size: clamp(3.5rem, 9vw, 9rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+  margin-bottom: 1.25rem;
+}
+
+.hero-tagline {
+  font-size: 1rem;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2.25rem;
+  max-width: 38ch;
+  min-height: 1.5em; /* prevent layout jump while loading */
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hero-stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.hero-stat-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.hero-stat-divider {
+  width: 1px;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Animated scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  writing-mode: vertical-rl;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 52px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.55), transparent);
+  transform-origin: top;
+  animation: scroll-drop 2.4s ease-in-out infinite;
+}
+
+@keyframes scroll-drop {
+  0%   { transform: scaleY(0); opacity: 0; transform-origin: top; }
+  35%  { transform: scaleY(1); opacity: 1; transform-origin: top; }
+  65%  { transform: scaleY(1); opacity: 1; transform-origin: bottom; }
+  100% { transform: scaleY(0); opacity: 0; transform-origin: bottom; }
+}
+
+/* ============================================================
+   6. Gallery — CSS columns masonry (preserves natural aspect ratios)
+   ============================================================ */
+main {
+  padding: var(--gap);
+}
+
+.gallery {
+  columns: 4;
+  column-gap: var(--gap);
+}
+
+/* ============================================================
+   7. Gallery Items
+   ============================================================ */
+.gallery-item {
+  break-inside: avoid;
+  margin-bottom: var(--gap);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  background: var(--skeleton);
+
+  /* Reveal: starts hidden, .is-visible added by IntersectionObserver */
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity var(--t-slow),
+    transform var(--t-slow);
+}
+
+.gallery-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: auto; /* natural aspect ratio */
+  display: block;
+  transition:
+    transform var(--t-slow),
+    filter var(--t-base);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.07);
+  filter: brightness(0.68);
+}
+
+/* Location overlay — slides up on hover */
+.item-info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1.25rem 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
+  color: #ffffff;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--t-base),
+    transform var(--t-base);
+}
+
+.gallery-item:hover .item-info {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hide overlay when no location data */
+.gallery-item:not(:has([data-location])) .item-info { display: none; }
+
+.item-location {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+
+/* ============================================================
+   8. Lightbox
+   ============================================================ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-base);
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--lightbox-bg);
+  backdrop-filter: blur(10px) saturate(60%);
+  -webkit-backdrop-filter: blur(10px) saturate(60%);
+}
+
+.lightbox-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: min(92vw, 1200px);
+  max-height: 92dvh;
+  transform: scale(0.94);
+  transition: transform var(--t-slow);
+}
+
+.lightbox.is-open .lightbox-content { transform: scale(1); }
+
+.lightbox-img {
+  border-radius: var(--r-md);
+  max-height: calc(92dvh - 72px);
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  transition: opacity var(--t-fast);
+}
+
+.lightbox-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: var(--r-sm);
+}
+
+.lightbox-location {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lightbox-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.lightbox-counter {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.lightbox-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  padding: 0.3rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--r-full);
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+
+.lightbox-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 1.75rem; right: 1.75rem;
+  z-index: 2;
+  width: 44px; height: 44px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  font-size: 1.05rem;
+  display: grid;
+  place-items: center;
+  transition: background var(--t-fast);
+}
+
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.22); }
+
+.lightbox-arrow {
+  position: fixed;
+  top: 50%; transform: translateY(-50%);
+  z-index: 2;
+  width: 52px; height: 52px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 1.25rem;
+  display: grid;
+  place-items: center;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+
+.lightbox-arrow:hover { background: rgba(255, 255, 255, 0.18); }
+
+.lightbox-prev { left:  1.75rem; }
+.lightbox-next { right: 1.75rem; }
+.lightbox-prev:hover { transform: translateY(-50%) translateX(-3px); }
+.lightbox-next:hover { transform: translateY(-50%) translateX(3px); }
+
+/* ============================================================
+   9. Footer
+   ============================================================ */
+.site-footer {
+  padding: 2.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   10. Responsive
+   ============================================================ */
+@media (max-width: 1100px) {
+  .gallery { columns: 3; }
+}
+
+@media (max-width: 768px) {
+  :root { --gap: 6px; }
+  .gallery { columns: 2; }
+  .hero-content { padding: 0 1.5rem 3rem; }
+  .scroll-indicator { display: none; }
+  .site-nav { padding: 1.25rem 1.5rem; }
+  .site-nav.past-hero { padding: 0.9rem 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  :root { --gap: 4px; }
+  .gallery { columns: 1; }
+  .lightbox-arrow { display: none; }
+  .lightbox-close { top: 1rem; right: 1rem; }
+}
