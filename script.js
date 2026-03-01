@@ -102,8 +102,11 @@
     let back  = bgB; // hidden layer that loads the next photo
     let idx   = CONFIG.heroBgIndex % photos.length;
 
-    function showSlide() {
-      const url = photos[idx].urls.full;
+    function showSlide(isFirst) {
+      const photo = photos[idx];
+      // First slide: load the smaller 'regular' URL so the hero appears immediately,
+      // then silently upgrade to 'full' resolution once it downloads.
+      const url = isFirst ? photo.urls.regular : photo.urls.full;
 
       // Fresh Image() object: onload always fires, even for browser-cached URLs
       const loader = new Image();
@@ -115,19 +118,26 @@
           front.classList.remove('is-active');
           [front, back] = [back, front];
           heroSkeleton?.remove();
+          if (isFirst) {
+            // Preload full resolution in background; swap in once cached (no visible flash)
+            const currentFront = front;
+            const fullLoader = new Image();
+            fullLoader.onload = () => { currentFront.src = photo.urls.full; };
+            fullLoader.src = photo.urls.full;
+          }
         }));
       };
       loader.onerror = () => {
         idx = (idx + 1) % photos.length;
-        showSlide();
+        showSlide(isFirst);
       };
       loader.src = url;
     }
 
-    showSlide();
+    showSlide(true);
     setInterval(() => {
       idx = (idx + 1) % photos.length;
-      showSlide();
+      showSlide(false);
     }, 8000);
   }
 
@@ -397,25 +407,32 @@
     setupIdleFade();
     setupFullscreen();
 
+    const base = `collections/${CONFIG.collectionId}/photos?per_page=30`;
+
+    // Fire all requests simultaneously — don't gate collection fetches on user/stats
+    const userPromise  = apiGet(`users/${CONFIG.username}`);
+    const statsPromise = apiGet(`users/${CONFIG.username}/statistics`);
+    const page1Promise = apiGet(`${base}&page=1`);
+    const page2Promise = apiGet(`${base}&page=2`);
+
     try {
-      const [userData, statsData] = await Promise.all([
-        apiGet(`users/${CONFIG.username}`),
-        apiGet(`users/${CONFIG.username}/statistics`),
+      // Start the hero slideshow the moment page 1 arrives — no need to wait for
+      // user data, stats, or page 2 (heroBgIndex=4 is within the first 30 photos)
+      const page1 = await page1Promise;
+      startSlideshow(page1);
+      startGrain();
+
+      // Wait for the rest in parallel
+      const [userData, statsData, page2] = await Promise.all([
+        userPromise,
+        statsPromise,
+        page2Promise.catch(() => []),
       ]);
 
       renderHero(userData, statsData);
-
-      // Fetch both pages of the collection in parallel (API max is 30/page)
-      const base = `collections/${CONFIG.collectionId}/photos?per_page=30`;
-      const [page1, page2] = await Promise.all([
-        apiGet(`${base}&page=1`),
-        apiGet(`${base}&page=2`),
-      ]);
       const photos = [...page1, ...page2.filter(p => p?.id)];
-
       state.photos = photos;
-      startSlideshow(photos);
-      startGrain();
+
       clearSkeletons(gallery);
       renderGallery(gallery, photos);
       setupMasonrySpans(gallery);
