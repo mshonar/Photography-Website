@@ -6,40 +6,49 @@
   <title>Mohammed Shonar | Visuals</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&family=IBM+Plex+Serif:ital,wght@0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Floating nav: transparent over hero, frosted glass once scrolled past -->
-  <nav class="site-nav" id="site-nav">
-    <span class="nav-name">Mohammed Shonar</span>
-    <a class="nav-link" id="nav-unsplash" href="https://unsplash.com/@shonar" target="_blank" rel="noopener">Unsplash ↗</a>
-  </nav>
-
   <!-- Hero: full viewport, photo background, name + stats overlay -->
   <section class="hero" id="hero">
+  <!-- Nav lives inside hero so it remains visible during hero fullscreen -->
+  <nav class="site-nav" id="site-nav">
+    <span class="nav-name">Mohammed Shonar</span>
+    <button class="hero-fullscreen" id="hero-fullscreen" aria-label="Enter fullscreen">
+      <span class="icon-expand">Fullscreen</span>
+      <span class="icon-collapse" hidden>Exit</span>
+    </button>
+  </nav>
     <div class="hero-skeleton skeleton" id="hero-skeleton"></div>
-    <img class="hero-bg" id="hero-bg" alt="">
+    <img class="hero-bg" id="hero-bg-a" alt="">
+    <img class="hero-bg" id="hero-bg-b" alt="">
+    <canvas class="hero-grain" id="hero-grain" aria-hidden="true"></canvas>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <h1 class="hero-name">Mohammed<br>Shonar</h1>
       <p class="hero-tagline" id="hero-tagline"></p>
       <div class="hero-stats">
         <div class="hero-stat">
-          <span class="hero-stat-value" id="stat-downloads">–</span>
-          <span class="hero-stat-label">Downloads</span>
+          <span class="hero-stat-value" id="stat-views">–</span>
+          <span class="hero-stat-label">Views</span>
         </div>
         <span class="hero-stat-divider"></span>
         <div class="hero-stat">
-          <span class="hero-stat-value" id="stat-views">–</span>
-          <span class="hero-stat-label">Views</span>
+          <span class="hero-stat-value" id="stat-downloads">–</span>
+          <span class="hero-stat-label">Downloads</span>
         </div>
         <span class="hero-stat-divider"></span>
         <div class="hero-stat">
           <span class="hero-stat-value" id="stat-photos">–</span>
           <span class="hero-stat-label">Photos</span>
         </div>
+        <span class="hero-stat-divider"></span>
+        <a class="hero-stat hero-stat-link" id="nav-unsplash" href="https://unsplash.com/@shonar" target="_blank" rel="noopener">
+          <span class="hero-stat-value">Unsplash</span>
+          <span class="hero-stat-label">View Profile ↗</span>
+        </a>
       </div>
     </div>
     <div class="scroll-indicator" aria-hidden="true">
@@ -57,15 +66,36 @@
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
     <div class="lightbox-backdrop"></div>
     <button class="lightbox-close" id="lightbox-close" aria-label="Close">&#x2715;</button>
-    <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" aria-label="Previous photo">&#8592;</button>
-    <button class="lightbox-arrow lightbox-next" id="lightbox-next" aria-label="Next photo">&#8594;</button>
+    <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" aria-label="Previous photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="lightbox-arrow lightbox-next" id="lightbox-next" aria-label="Next photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
     <div class="lightbox-content">
       <img class="lightbox-img" id="lightbox-img" src="" alt="">
       <div class="lightbox-meta">
         <span class="lightbox-location" id="lightbox-location"></span>
         <div class="lightbox-meta-right">
+          <div class="lightbox-stats">
+            <span class="lightbox-stat">
+              <span class="lightbox-stat-value" id="lb-views">–</span>
+              <span class="lightbox-stat-label">Views</span>
+            </span>
+            <span class="lightbox-stat">
+              <span class="lightbox-stat-value" id="lb-downloads">–</span>
+              <span class="lightbox-stat-label">Downloads</span>
+            </span>
+          </div>
           <span class="lightbox-counter" id="lightbox-counter"></span>
-          <a class="lightbox-link" id="lightbox-link" href="" target="_blank" rel="noopener">View on Unsplash &#8599;</a>
+          <button class="lightbox-download" id="lightbox-download" aria-label="Download photo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span class="btn-label">Download</span>
+          </button>
+          <a class="lightbox-link" id="lightbox-link" href="" target="_blank" rel="noopener">
+            <span class="btn-label">View on Unsplash</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
         </div>
       </div>
     </div>
